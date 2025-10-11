@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Your Name — home</title>
+<link rel="stylesheet" href="/style.css">
+<body>
+<!-- header -->
+<header>
+<nav>
+<a href="/">home</a>
+<a href="/books/">books</a>
+<a href="/now.html">now</a>
+<a href="/about.html">about</a>
+</nav>
+<hr>
+</header>
+
+
+<main>
+<h1>Your Name</h1>
+<p>Short one‑liner about you. Example: “Math & CS grad writing about books, data, and building simple systems.”</p>
+
+
+<h2>Latest</h2>
+<ul>
+<li><a href="/books/">Book notes & reviews</a></li>
+<li><a href="/now.html">What I’m doing now</a></li>
+</ul>
+</main>
+
+
+<!-- footer -->
+<footer>
+<hr>
+<p class="small">© <span id="y"></span> Your Name — plain HTML, no tracking. <a href="/colophon.html">colophon</a>.</p>
+<script>document.getElementById('y').textContent = new Date().getFullYear()</script>
+</footer>
+</body>
+</html>
