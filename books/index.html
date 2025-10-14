@@ -1,59 +1,109 @@
 <!doctype html>
 <html lang="en">
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Books — reviews & notes</title>
-<link rel="stylesheet" href="/style.css">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Books — I’ve read</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    .controls { display:flex; gap:.5rem; align-items:center; margin:1rem 0; }
+    .controls button { border:1px solid #ddd; background:#f9f9f9; padding:.3rem .6rem; cursor:pointer; }
+    .controls button.active { border-color:#000; }
+    .book { display:grid; grid-template-columns: 72px 1fr; gap:1rem; padding:1rem 0; border-top:1px solid #eee; }
+    .cover { width:72px; height:108px; background:#f2f2f2; display:flex; align-items:center; justify-content:center; font-size:.8em; color:#777; }
+    .book h3 { margin:.2rem 0; }
+    .meta { color:#666; font-size:.9em; }
+    .tiny { font-size:.9em; margin:.4rem 0 .2rem; }
+    .badge { font-weight:600; }
+  </style>
+</head>
 <body>
-<!-- header -->
-    <header>
+  <header>
     <nav>
-        <a href="/">home</a>
-        <a href="/books/">books</a>
-        <a href="/now.html">now</a>
-        <a href="/about.html">about</a>
+      <a href="/">home</a>
+      <a href="/books/">books</a>
+      <a href="/now.html">now</a>
+      <a href="/about.html">about</a>
     </nav>
     <hr>
-</header>
+  </header>
 
+  <main>
+    <h1>Books I’ve read</h1>
+    <p class="meta">Tiny summary + link to notes. Sorted with top picks first. Sort by best, newest, or title.</p>
 
-<main>
-    <h1>Books</h1>
-    <p class="meta">Short reviews and notes. Each page starts with a plain‑text front‑matter block.</p>
+    <div class="controls">
+      <span>Sort:</span>
+      <button data-sort="best" class="active">Best</button>
+      <button data-sort="newest">Newest</button>
+      <button data-sort="title">Title</button>
+    </div>
+
     <div id="list"></div>
-</main>
+  </main>
 
-
-<!-- footer -->
-<footer>
+  <footer>
     <hr>
-    <p class="small">© <span id="y"></span> Your Name — plain HTML, no tracking.</p>
-</footer>
+    <p class="small">© <span id="y"></span> Noah Oppenheim — plain HTML, no tracking.</p>
+  </footer>
 
+  <script src="./data.js"></script>
+  <script>
+    const elList = document.getElementById('list');
+    const yearEl = document.getElementById('y'); if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-<script>
-// naive folder scan: maintain a manual list of review files here
-const reviews = [
-    'the-myth-of-sisyphus.html',
-    'thinking-fast-and-slow.html'
-];
+    function fmtDate(d){ return new Date(d).toISOString().slice(0,10); }
 
+    function render(arr){
+      elList.innerHTML = '';
+      arr.forEach(b => {
+        const wrap = document.createElement('article');
+        wrap.className = 'book';
 
-// fetch title/metadata from each review's front‑matter comment
-Promise.all(reviews.map(f => fetch(f).then(r => r.text()).then(t => ({ f, t }))))
-    .then(items => {
-        const ul = document.createElement('ul');
-        items.forEach(({f,t}) => {
-            const meta = (t.match(/<!--([\s\S]*?)-->/) || [,''])[1];
-            const title = (meta.match(/title:\s*(.*)/) || [,f]).pop();
-            const author = (meta.match(/author:\s*(.*)/) || [,""]).pop();
-            const date = (meta.match(/date:\s*(.*)/) || [,""]).pop();
-            const li = document.createElement('li');
-            li.innerHTML = `<a href="${f}">${title}</a> <span class="meta">${author ? '— '+author : ''} ${date? ' ('+date+')':''}</span>`;
-            ul.appendChild(li);
-        });
-        document.getElementById('list').appendChild(ul);
-        document.getElementById('y').textContent = new Date().getFullYear();
+        const cover = document.createElement('div');
+        cover.className = 'cover';
+        if (b.cover) {
+          const img = document.createElement('img');
+          img.src = b.cover; img.alt = `${b.title} cover`; img.loading = 'lazy';
+          img.style.width = '72px'; img.style.height = 'auto';
+          cover.innerHTML = ''; cover.appendChild(img);
+        } else {
+          cover.textContent = 'no cover';
+        }
+
+        const info = document.createElement('div');
+        info.innerHTML = `
+          <h3><a href="${b.slug}.html">${b.title}</a> <span class="meta">— ${b.author}</span></h3>
+          <div class="meta">Date read: ${fmtDate(b.date_read)} · How strongly I recommend it: <span class="badge">${b.rating}/10</span></div>
+          <p class="tiny">${b.blurb ?? ''}</p>
+          <p class="small"><a href="${b.slug}.html">Read my notes</a>${b.amazon ? ` · <a href="${b.amazon}" rel="noopener" target="_blank">Amazon page</a>`:''}</p>
+        `;
+
+        wrap.appendChild(cover);
+        wrap.appendChild(info);
+        elList.appendChild(wrap);
+      });
+    }
+
+    function sortBy(mode, data){
+      const arr = [...data];
+      if (mode === 'best')   arr.sort((a,b) => b.rating - a.rating || a.title.localeCompare(b.title));
+      if (mode === 'newest') arr.sort((a,b) => new Date(b.date_read) - new Date(a.date_read));
+      if (mode === 'title')  arr.sort((a,b) => a.title.localeCompare(b.title));
+      return arr;
+    }
+
+    // initial render: best
+    render(sortBy('best', BOOKS));
+
+    // wire up buttons
+    document.querySelectorAll('.controls button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.controls button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        render(sortBy(btn.dataset.sort, BOOKS));
+      });
     });
-    </script>
+  </script>
 </body>
 </html>
