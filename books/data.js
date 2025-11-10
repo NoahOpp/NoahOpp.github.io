@@ -8,8 +8,7 @@ const BOOKS = [
     date_read: "2025-10-08",           // YYYY-MM-DD
     rating: 9,                         // 1–10
     blurb: "What is happening when we sleep; how to improve sleep; effects on health, learning, memory, longevity.",
-    cover: "/books/covers/sisyphus.jpg",
-    amazon: ""                         // optional
+    cover: "books/covers/Why-We-Sleep.jpg",
   },
   {
     title: "Thinking, Fast and Slow",
@@ -19,6 +18,5 @@ const BOOKS = [
     rating: 8,
     blurb: "Two systems of thought; common cognitive biases; practical ways to think a bit clearer.",
     cover: "/books/covers/tfas.jpg",
-    amazon: ""
   }
 ];
