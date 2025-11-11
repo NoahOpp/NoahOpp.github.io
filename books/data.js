@@ -4,11 +4,11 @@ const BOOKS = [
   {
     title: "Why we Sleep",
     author: "Mathew Walker",
-    slug: "Why-We-Sleep",      // must match your review filename (without .html)
+    slug: "why-we-sleep",      // must match your review filename (without .html)
     date_read: "2025-10-08",           // YYYY-MM-DD
     rating: 9,                         // 1–10
     blurb: "What is happening when we sleep; how to improve sleep; effects on health, learning, memory, longevity.",
-    cover: "books/covers/Why-We-Sleep.jpg",
+    cover: "/books/covers/why-we-sleep.jpg",
   },
   {
     title: "Thinking, Fast and Slow",
